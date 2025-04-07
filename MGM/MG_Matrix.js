@@ -1,0 +1,1 @@
+// ALL META GLYPHS This will have the 6 pillars as root families .. MGM - roots - num words time - 

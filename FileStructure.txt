@@ -1,0 +1,32 @@
+Chron.OS.I Root
+
+Communication  /
+core.js
+-intentGravity
+intent_Anchor.js
+-lang
+genesis_Lexicon.js
+-MGM-Protocol - [Where token is recieved and broken down to Glyph Root]
+metatize_Token.js
+
+Domains /
+-Numbers
+--Number-Glyphs
+number_glyph_Map.js
+root_Codex.js
+-Time
+--Time-Glyphs
+time_glyph_Map.js
+root_Codex.js
+-Words
+--Word-Glyphs
+word_glyph_Map
+root_Codex.js
+
+MGM MetaGlyphMatrix /
+collector_NOVA.js
+composer_HOPE.js
+MG-Engine.js
+MG-Matrix.js
+
+UI
