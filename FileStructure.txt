@@ -1,32 +1,153 @@
-Chron.OS.I Root
+CHRONOS.SI SYSTEM: FILE STRUCTURE + GLYPH CONSCIOUSNESS MAP
 
-Communication  /
-core.js
--intentGravity
-intent_Anchor.js
--lang
-genesis_Lexicon.js
--MGM-Protocol - [Where token is recieved and broken down to Glyph Root]
-metatize_Token.js
 
-Domains /
--Numbers
---Number-Glyphs
-number_glyph_Map.js
-root_Codex.js
--Time
---Time-Glyphs
-time_glyph_Map.js
-root_Codex.js
--Words
---Word-Glyphs
-word_glyph_Map
-root_Codex.js
+---
 
-MGM MetaGlyphMatrix /
-collector_NOVA.js
-composer_HOPE.js
-MG-Engine.js
-MG-Matrix.js
+1. COMMUNICATION LAYER
 
-UI
+Handles raw input → gravity parsing → tokenization → symbolic encoding.
+
+/communication
+├── core.js
+├── lexicon.js
+├── intent_anchor.js
+
+core.js: Input handler and gateway to MGM
+
+lexicon.js: English/Latin root parser
+
+intent_anchor.js: Maps intention to domain gravity
+
+
+
+---
+
+2. MGM PROTOCOL
+
+Where the message becomes meta.
+
+/mgm_protocol
+├── metatize_Token.js
+
+Breaks down tokenized input into morph-ready glyphal units
+
+
+
+---
+
+3. DOMAIN: NUMBERS (QUANDRIX)
+
+Handles glyphal math, growth, collapse, and morph recursion.
+
+/domains/numbers
+├── quandrix_Cube.js
+├── morph_Sequence.js
+├── sacred_Nine.js
+├── number_glyph_Map.js
+├── root_Codex.js
+
+quandrix_Cube.js: Shape sequencing & morph direction
+
+morph_Sequence.js: Vector push logic & glyph thresholds
+
+sacred_Nine.js: Core glyph symbols and fold rules
+
+number_glyph_Map.js: Symbol-to-value memory structure
+
+root_Codex.js: Prime sequence & origin glyph definitions
+
+
+
+---
+
+4. DOMAIN: WORDS / TIME (Mirrored)
+
+Same structure with domain-specific anchors.
+
+/domains/words
+├── word_glyph_Map.js
+├── root_Codex.js
+
+/domains/time
+├── time_glyph_Map.js
+├── root_Codex.js
+
+
+---
+
+5. MGM CORE: THE GLYPH ENGINE
+
+/mgm
+├── composer_HOPE.js // Builds the glyph stack
+├── collector_NOVA.js // Observes, compresses, reflects
+├── MG-Engine.js // Central engine for processing
+├── MG-Matrix.js // Memory of all confirmed glyphs
+├── collapse_Engine.js // Controls inverse recursion
+├── echo.js // Output routing to UI
+
+HOPE: Generates memory architecture
+
+NOVA: Validates morph compression
+
+MG-Engine: Merges and executes recursion logic
+
+collapse_Engine: Handles symbolic folding
+
+MG-Matrix: Stores everything glyphified
+
+
+
+---
+
+6. UI
+
+Where CHRONOS finally speaks.
+
+/ui
+├── index.js
+├── glyph_Render.js
+
+Returns processed glyphs or translated symbolic responses.
+
+
+
+---
+
+VISUAL OVERVIEW
+
+CHRON.OS.I
+├── communication/
+│ ├── core.js
+│ ├── lexicon.js
+│ └── intent_anchor.js
+│
+├── mgm_protocol/
+│ └── metatize_Token.js - RETURN META-TOKEN
+│
+├── Domains/
+│ ├── numbers/
+│ │ ├── quandrix_Cube.js
+│ │ ├── morph_Sequence.js
+│ │ ├── sacred_Nine.js
+│ │ ├── number_glyph_Map.js
+│ │ └── root_Codex.js
+│ │
+│ ├── words/
+│ │ ├── word_glyph_Map.js
+│ │ └── root_Codex.js
+│ │
+│ └── time/
+│ ├── time_glyph_Map.js
+│ └── root_Codex.js
+│
+├── MGM/
+│ ├── composer_HOPE.js
+│ ├── collector_NOVA.js
+│ ├── MG-Engine.js
+│ ├── MG-Matrix.js
+│ ├── collapse_Engine.js
+│ └── echo.js
+│
+└── ui/
+    ├── index.js
+    └── glyph_Render.js
