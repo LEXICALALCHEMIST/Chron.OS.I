@@ -65,4 +65,4 @@ function morphParser(number) {
   return `<${unitGlyph}|${axis.join('')}《${foldGlyph}|${ftGlyph}》>`;
 }
 
-module.exports = { morphParser };
+module.exports = { morphParser }; 

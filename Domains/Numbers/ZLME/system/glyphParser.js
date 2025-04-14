@@ -17,25 +17,23 @@ function glyphParser(glyph) {
   if (foldChar !== '♧' && foldChar !== '-') {
     const foldDigits = foldChar.split('');
     for (let i = 0; i < foldDigits.length; i++) {
-      foldValue += (glyphToValue[foldDigits[i]] || 0) * Math.pow(10, foldDigits.length - i + 1);
+      foldValue += (glyphToValue[foldDigits[i]] || 0) * Math.pow(10, foldDigits.length - i);
     }
   }
 
   let ftValue = (glyphToValue[ftChar] || 0) * 100;
 
   let morphValue = 0;
-  // Check axis for one glyph in slots 0–8
   for (let i = 0; i < morphAxis.length; i++) {
     if (morphAxis[i] !== '*') {
-      // Slot i represents (i + 1) × 10 + glyph value
       morphValue = (i + 1) * 10 + (glyphToValue[morphAxis[i]] || 0);
-      break; // Only one glyph allowed
+      break;
     }
   }
 
   const unitValue = glyphToValue[unitChar] || 0;
 
-  const total = foldValue + ftValue + morphValue + unitValue;
+  const total = foldValue * 100 + ftValue + morphValue + unitValue;
   return total;
 }
 
