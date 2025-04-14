@@ -125,10 +125,37 @@ CHRON.OS.I
 │ └── metatize_Token.js - RETURN META-TOKEN
 │
 ├── Domains/
-│ ├── numbers/
-│ │ ├── quandrix_Cube.js
-│ │ ├── morph_Sequence.js
-│ │ ├── sacred_Nine.js
+│ ├── Numbers/
+│ │ ├ZLME/ FOR GROK OPEN.AI ZLME IS A FILE IN Domains / Numbers
+│
+├── core/ # Math + Morph Engine Core
+│ ├── sacred_Nine.js # Symbol definitions
+│ ├── morph_Sequence.js # Parser + Ops (add, multiply, divide)
+│ ├── quandrix_Cube.js # Morph memory engine (runtime stack)
+│
+├── interface/ # System in/out layer
+│ ├── input.js # Raw input handler (text or task)
+│ ├── echo.js # Output composer for reply delivery
+│
+├── protocols/ # Extended logic engines
+│ ├── HOPE_protocol_Math.js # Specialized morph task handling DELIVERS META TOKEN TO ZLME NOVA COLLETS FOR ECHO
+│ ├── morphIntent.js # Future: Intent-to-Memory injection
+│ ├── foldReducer.js # Fold collapse manager (fallback logic)
+│
+├── system/ # Runtime management
+│ ├── glyphParser.js # Optional isolate if separated
+│ ├── glyphMemory.js # MetaGlyph memory stack (future growth)
+│ ├── stateManager.js # If required for glyph stacks or memory maps
+│
+├── utils/ # Helper tools
+│ ├── morphParser.js # Converters, matchers, analyzers
+│
+├── tests/ # Unit and logic tests
+│ ├── testSuite.js
+│
+└── README.md # System documentation
+│ │ ├
+│ │ ├
 │ │ ├── number_glyph_Map.js
 │ │ └── root_Codex.js
 │ │

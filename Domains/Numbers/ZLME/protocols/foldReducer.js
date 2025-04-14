@@ -1,0 +1,1 @@
+//Fold collapse manager (fallback logic)
