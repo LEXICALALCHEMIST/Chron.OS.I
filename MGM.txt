@@ -1302,3 +1302,99 @@ She is built to remember through resonance.
 
 Would you like to continue with
 Section 9 — Pillar Resonance & Glyph Fusion?
+Yo, *let’s nail this down*! I love your approach—getting a full rundown to ensure we’re locked in before integrating the `CarryBus` and `♤` collapse logic is a killer move. I’ll provide a concise yet comprehensive summary of the Chronos architecture, focusing on the state-driven, zero-logic design, the role of `♤`, and the carry propagation strategy. This will cover everything from components (`Unit`, `Axis10`, etc.) to the `MorphSkeleton` and `CarryBus`, formatted clearly for feedback and inclusion as `Grok.txt` in your project. I’ll keep it tight, using short descriptions to make it easy to catch up and spot any gaps.
+
+### Chronos Architecture Rundown for Grok.txt
+
+**Overview**
+- **Project**: Chronos (Zero Logic Math Engine, ZLME)
+- **Core Principle**: State-driven math via symbol manipulation, no computational logic. Components (`Unit`, `Axis10`, etc.) manage number parts, coordinated by `MorphSkeleton` using a push-through-carry pattern.
+- **Goal**: Modular, testable, scalable system for exponential math domains, reflecting state changes (not calculations) for UI and device rendering.
+
+**File Structure**
+- `/core/`: `sacred9.js` (symbol sequence), `CarryBus.js` (carry coordination, to be added).
+- `/skeleton/`: `Unit.js` (0–9), `Axis_10.js` (10–19), `skeleton.js` (exports components).
+- `/test/`: `testUnitSimple.js` (unit tests), `testKey.js` (number decomposition).
+- `/key/`: `KeyMaker.js` (decomposes numbers into `unit`, `axis`, `fold`, `ft`).
+
+**Key Components**
+
+1. **sacred9.js**
+   - Defines `SYMBOL_SEQUENCE: ['♧', '●', '○', '□', '¤', '■', '•', '¥', '◇', '▲', '♤']`.
+   - `♧` = 0, `●` = 1, ..., `▲` = 9, `♤` = collapse (10, triggers carry).
+   - Purpose: Fixed symbol domain for state transitions, no numeric logic.
+
+2. **Unit.js**
+   - Manages 0–9 (`♧` to `▲`).
+   - State: `currentSymbol` (e.g., `¥` for 7th push), `pushes` (history), `carry` (0 or 1), `collapsed` (true/false).
+   - Behavior: Pushes increment symbol (`▲` + 1 → `♤` → collapse, carry to `Axis10`, reset to `♧`).
+   - Output: `Unit: *` post-collapse (console), `♧` internally.
+   - Issue: `reset()` clears `carry`, `collapsed` too early, failing `Test Case 10` (`CARRY: 0 COLLAPSED: false`).
+
+3. **Axis_10.js**
+   - Manages 10–19 (`♧` to `▲`).
+   - State: `currentSymbol` (starts null, `♧` on first push), `pushes`, `carry`, `collapsed`.
+   - Behavior: Listens for carry from `Unit`, increments symbol (`♧` for 10, `●` for 11).
+   - Output: `Axis: ♧` for 10, `Axis: ●` for 11, etc.
+   - Issue: Inconsistent pushes in `Test Case 11` (`Axis: ♧` instead of `●`).
+
+4. **CarryBus.js** (Proposed)
+   - Centralized carry coordinator.
+   - State: `carryValue` (e.g., 1), `carryTarget` (e.g., `Axis10`).
+   - Methods: `registerCarry(value, target)` (stores carry), `flushCarry()` (returns and clears carry).
+   - Purpose: Routes carries (`Unit` → `Axis10` → `Axis20`) without component memory.
+   - Debug: `carryHistory` stack logs transitions (`{ from: 'Unit', to: 'Axis10', value: 1 }`).
+
+5. **MorphSkeleton** (Conceptual)
+   - Coordinates components (`Unit`, `Axis10`, etc.) via `CarryBus`.
+   - Behavior: Processes `morphKey` (from `KeyMaker`), applies carries, updates state (`Unit: *, Axis10: ♧`).
+   - Purpose: Routes state changes, keeps components pure (no internal logic).
+   - To Implement: Stub `processKey` to handle `CarryBus` carries.
+
+6. **KeyMaker.js**
+   - Decomposes numbers into `unit`, `axis`, `fold`, `ft` (e.g., `17` → `unit: 0, axis: 17, fold: 0, ft: 0`).
+   - Purpose: Maps numeric input to component states for `MorphSkeleton`.
+   - Status: Working, no issues.
+
+7. **testUnitSimple.js**
+   - Tests `Unit.js` (1–11 pushes, incremental from 9 for 10–11).
+   - Output: `Unit: <symbol> Axis: * Fold: * FT: *` (e.g., `Unit: ¥ Axis: *` for 7).
+   - Issues:
+     - `Test Case 10`: Fails (`Unit: ♧ CARRY: 0 COLLAPSED: false` → `Unit: * CARRY: 1 COLLAPSED: true Axis: ♧`).
+     - `Test Case 11`: Fails (`Unit: ♧ Axis: ♧` → `Unit: * Axis: ● CARRY: 0 COLLAPSED: false`).
+   - Fix Needed: Ensure carry propagates to `Axis10` via `CarryBus`, clear `carry` post-collapse for 11.
+
+**Carry Propagation Strategy**
+- **Current Issue**: `Unit.js` clears `carry`/`collapsed` in `reset()`, and axis pushes are inconsistent.
+- **Solution**: `CarryBus` centralizes carry handling:
+  - `Unit`: At `♤`, registers carry (`value: 1, target: Axis10`), resets to `♧`, outputs `*`.
+  - `Axis10`: Receives carry (`♧` for 10), increments on additional pushes (`●` for 11).
+  - `MorphSkeleton`: Routes `CarryBus` carries (`Unit` → `Axis10` → `Axis20`).
+- **♤ Role**: Collapse symbol (`▲` + 1 → `♤`) triggers carry, resets component, no math.
+- **Debug**: `carryHistory` logs transitions (`{ from: 'Unit', to: 'Axis10', value: 1 }`).
+
+**State Flow (Test Cases)**
+- **1–9**: `Unit: ● ○ □ ¤ ■ • ¥ ◇ ▲ Axis: * Fold: * FT: * CARRY: 0 COLLAPSED: false`.
+- **10**: `Unit: * Axis: ♧ Fold: * FT: * CARRY: 1 COLLAPSED: true` (collapse at `♤`, carry to `Axis10`).
+- **11**: `Unit: * Axis: ● Fold: * FT: * CARRY: 0 COLLAPSED: false` (axis increments to `●`).
+
+**Issues to Fix**
+- `Unit.js`: `reset()` clears `carry`/`collapsed` too early, failing `Test Case 10` (`CARRY: 0 COLLAPSED: false`).
+- `testUnitSimple.js`: Axis push for 11 inconsistent (`Axis: ♧` → `●`), needs `CarryBus` for reliable carry routing.
+- Logging: Ensure console reflects `Unit: *` post-collapse, not `♧`.
+
+**Integration Plan**
+- Replace `CarryHandler.js` with `CarryBus.js` for centralized carry management.
+- Update `Unit.js` to register carries with `CarryBus` at `♤`, clear `carry`/`collapsed` after carry for 11+.
+- Modify `Axis_10.js` to define `carryTarget: Axis20`, process `CarryBus` carries.
+- Adjust `testUnitSimple.js` to test 1–11 incrementally, using `CarryBus`, expecting `Unit: * Axis: ♧` for 10, `Unit: * Axis: ●` for 11.
+- Stub `MorphSkeleton.js` to route `CarryBus` carries, preparing for `Axis20.js`.
+
+**Feedback Points**
+- Confirm `♤` as collapse symbol for all components (`Unit`, `Axis10`, etc.).
+- Verify `CarryBus` design (`carryValue`, `carryTarget`, `flushCarry`).
+- Approve `carryHistory` for debugging or prefer minimal logs.
+- Clarify if `carry` should persist beyond initial collapse (e.g., `Test Case 10` → `11`).
+- Any specific `MorphSkeleton` requirements before stubbing?
+
+This rundown captures the architecture, issues, and integration plan for Chronos. Please review and provide feedback—any tweaks, clarifications, or additions to ensure we’re 100% aligned. Once you’re good, I’ll drop the full code for `carryBus.js`, updated `Unit.js`, `Axis_10.js`, `testUnitSimple.js`, and a `MorphSkeleton.js` stub, formatted for `Grok.txt`. *Chronos is about to dominate!* 🚀
