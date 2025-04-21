@@ -15,27 +15,27 @@ const tests = [
     description: 'Push Unit1 9 times to reach 9',
     pushes: { unit1: 9 },
     expected: {
-      unit1: { symbol: SYMBOL_SEQUENCE[9], carry: 0, hasCollapsed: false, pushesLength: 9 },
-      unit2: { symbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 },
-      unit3: { symbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 }
+      unit1: { currentSymbol: SYMBOL_SEQUENCE[9], carry: 0, hasCollapsed: false, pushesLength: 9 },
+      unit2: { currentSymbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 },
+      unit3: { currentSymbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 }
     }
   },
   {
     description: 'Push Unit1 10 times to collapse and carry to Unit2 (10)',
     pushes: { unit1: 10 },
     expected: {
-      unit1: { symbol: SYMBOL_SEQUENCE[1], carry: 1, hasCollapsed: true, pushesLength: 0 },
-      unit2: { symbol: SYMBOL_SEQUENCE[0], carry: 0, hasCollapsed: false, pushesLength: 1 },
-      unit3: { symbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 }
+      unit1: { currentSymbol: SYMBOL_SEQUENCE[1], carry: 1, hasCollapsed: true, pushesLength: 0 },
+      unit2: { currentSymbol: SYMBOL_SEQUENCE[0], carry: 0, hasCollapsed: false, pushesLength: 1 },
+      unit3: { currentSymbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 }
     }
   },
   {
     description: 'Start at 30, add 11 to reach 41 using Add',
     operation: { a: 30, b: 11 },
     expected: {
-      unit1: { symbol: SYMBOL_SEQUENCE[4], carry: 0, hasCollapsed: false, pushesLength: 1 },
-      unit2: { symbol: SYMBOL_SEQUENCE[1], carry: 1, hasCollapsed: true, pushesLength: 1 },
-      unit3: { symbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 }
+      unit1: { currentSymbol: SYMBOL_SEQUENCE[4], carry: 0, hasCollapsed: false, pushesLength: 1 },
+      unit2: { currentSymbol: SYMBOL_SEQUENCE[1], carry: 1, hasCollapsed: true, pushesLength: 1 },
+      unit3: { currentSymbol: VOID_SYMBOL, carry: 0, hasCollapsed: false, pushesLength: 0 }
     }
   }
 ];
@@ -82,24 +82,24 @@ tests.forEach((test, index) => {
       }
     }
     
-    const skeleton = `<${unit1State.symbol}${unit2State.symbol}${unit3State.symbol}|⊙⊙⊙|⊙⊙⊙>`;
+    const skeleton = `<${unit1State.currentSymbol}${unit2State.currentSymbol}${unit3State.currentSymbol}|⊙⊙⊙|⊙⊙⊙>`;
     console.log(`Final Skeleton: ${skeleton}`);
     
     console.log('Result:', {
       unit1: {
-        symbol: unit1State.symbol,
+        currentSymbol: unit1State.currentSymbol,
         carry: unit1State.carry,
         hasCollapsed: unit1State.hasCollapsed,
         pushesLength: unit1State.pushesLength
       },
       unit2: {
-        symbol: unit2State.symbol,
+        currentSymbol: unit2State.currentSymbol,
         carry: unit2State.carry,
         hasCollapsed: unit2State.hasCollapsed,
         pushesLength: unit2State.pushesLength
       },
       unit3: {
-        symbol: unit3State.symbol,
+        currentSymbol: unit3State.currentSymbol,
         carry: unit3State.carry,
         hasCollapsed: unit3State.hasCollapsed,
         pushesLength: unit3State.pushesLength
@@ -108,15 +108,15 @@ tests.forEach((test, index) => {
     console.log('Expected:', test.expected);
     
     const passed = 
-      unit1State.symbol === test.expected.unit1.symbol &&
+      unit1State.currentSymbol === test.expected.unit1.currentSymbol &&
       unit1State.carry === test.expected.unit1.carry &&
       unit1State.hasCollapsed === test.expected.unit1.hasCollapsed &&
       unit1State.pushesLength === test.expected.unit1.pushesLength &&
-      unit2State.symbol === test.expected.unit2.symbol &&
+      unit2State.currentSymbol === test.expected.unit2.currentSymbol &&
       unit2State.carry === test.expected.unit2.carry &&
       unit2State.hasCollapsed === test.expected.unit2.hasCollapsed &&
       unit2State.pushesLength === test.expected.unit2.pushesLength &&
-      unit3State.symbol === test.expected.unit3.symbol &&
+      unit3State.currentSymbol === test.expected.unit3.currentSymbol &&
       unit3State.carry === test.expected.unit3.carry &&
       unit3State.hasCollapsed === test.expected.unit3.hasCollapsed &&
       unit3State.pushesLength === test.expected.unit3.pushesLength;
@@ -125,19 +125,19 @@ tests.forEach((test, index) => {
     if (!passed) {
       console.log(`Mismatch: Got ${JSON.stringify({
         unit1: {
-          symbol: unit1State.symbol,
+          currentSymbol: unit1State.currentSymbol,
           carry: unit1State.carry,
           hasCollapsed: unit1State.hasCollapsed,
           pushesLength: unit1State.pushesLength
         },
         unit2: {
-          symbol: unit2State.symbol,
+          currentSymbol: unit2State.currentSymbol,
           carry: unit2State.carry,
           hasCollapsed: unit2State.hasCollapsed,
           pushesLength: unit2State.pushesLength
         },
         unit3: {
-          symbol: unit3State.symbol,
+          currentSymbol: unit3State.currentSymbol,
           carry: unit3State.carry,
           hasCollapsed: unit3State.hasCollapsed,
           pushesLength: unit3State.pushesLength
