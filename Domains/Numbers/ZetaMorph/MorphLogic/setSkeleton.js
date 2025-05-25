@@ -13,52 +13,45 @@ export default class SetSkeleton {
     this.unit2 = new Unit2();
     this.unit3 = new Unit3();
     this.carryBus = new CarryBus();
+    this.numberLength = 1;
+    this.activeUnitTarget = 'u1';
+    
+    // Bind skeleton to units
+    this.unit1.skeleton = this;
+    this.unit2.skeleton = this;
+    this.unit3.skeleton = this;
   }
 
   set(number) {
     console.log(`Setting skeleton for ${number}`);
+    
     if (number < 0 || number > 999) {
       throw new Error('Number must be between 0 and 999');
     }
     
-    // Extract digits in order (left-to-right)
     const digits = number.toString().split('').map(Number);
+    this.numberLength = digits.length;
+    this.activeUnitTarget = `u${this.numberLength}`;
     
-    // Map digits to units: first digit -> Unit1, second -> Unit2, third -> Unit3
-    const units = [
-      { unit: this.unit1, digit: digits[0], vpPlusOne: false }, // Unit1: no VP+1
-      { unit: this.unit2, digit: digits[1], vpPlusOne: true },  // Unit2: VP+1
-      { unit: this.unit3, digit: digits[2], vpPlusOne: true }   // Unit3: VP+1
-    ];
+    const units = [this.unit1, this.unit2, this.unit3];
     
-    // Set each unit
     for (let i = 0; i < units.length; i++) {
-      const { unit, digit, vpPlusOne } = units[i];
-      // Skip undefined digits (e.g., digits[2] for two-digit numbers)
+      const unit = units[i];
+      unit.state.currentSymbol = VOID_SYMBOL;
+      unit.state.carry = 0;
+      unit.state.hasCollapsed = false;
+      unit.state.pushes = [];
+      unit.state.pushesLength = 0;
+      
+      const digit = digits[digits.length - 1 - i]; // Right-to-left
       if (digit !== undefined) {
-        // Push for all defined digits, including 0 for Unit2/Unit3
-        const pushes = vpPlusOne ? digit + 1 : digit;
-        if (vpPlusOne || digit > 0) { // Push for Unit1 only if digit > 0, always for Unit2/Unit3
-          unit.push(pushes, this.carryBus);
-          console.log(`Set ${unit.state.label} to ${digit} (pushed ${pushes} times)`);
-          if (this.carryBus.carryValue > 0) {
-            const { carryValue, carryTarget } = this.carryBus.flushCarry();
-            if (carryTarget === 'Unit1' && i > 0) {
-              this.unit1.push(carryValue, this.carryBus);
-              console.log(`Carry applied to Unit1: ${carryValue}`);
-            } else if (carryTarget === 'Unit2' && i > 1) {
-              this.unit2.push(carryValue, this.carryBus);
-              console.log(`Carry applied to Unit2: ${carryValue}`);
-            }
-          }
-        }
+        console.log(`Setting unit${i + 1} to ${digit}`);
+        unit.state.currentSymbol = SYMBOL_SEQUENCE[digit];
+        unit.state.pushes = Array(digit).fill(SYMBOL_SEQUENCE[digit]);
+        unit.state.pushesLength = digit;
+        console.log(`Set unit${i + 1} to ${digit} (symbol: ${SYMBOL_SEQUENCE[digit]})`);
       }
     }
-    
-    // Reset push counts
-    this.unit1.state.pushes = [];
-    this.unit2.state.pushes = [];
-    this.unit3.state.pushes = [];
     
     const state = this.getState();
     console.log(`Skeleton: <${state.unit1.currentSymbol}${state.unit2.currentSymbol}${state.unit3.currentSymbol}|⊙⊙⊙|⊙⊙⊙>`);
@@ -66,28 +59,12 @@ export default class SetSkeleton {
   }
 
   getState() {
-    const unit1State = this.unit1.getState();
-    const unit2State = this.unit2.getState();
-    const unit3State = this.unit3.getState();
     return {
-      unit1: {
-        currentSymbol: unit1State.currentSymbol,
-        carry: unit1State.carry,
-        hasCollapsed: unit1State.hasCollapsed,
-        pushesLength: unit1State.pushes.length
-      },
-      unit2: {
-        currentSymbol: unit2State.currentSymbol,
-        carry: unit2State.carry,
-        hasCollapsed: unit2State.hasCollapsed,
-        pushesLength: unit2State.pushes.length
-      },
-      unit3: {
-        currentSymbol: unit3State.currentSymbol,
-        carry: unit3State.carry,
-        hasCollapsed: unit3State.hasCollapsed,
-        pushesLength: unit3State.pushes.length
-      }
+      unit1: this.unit1.state,
+      unit2: this.unit2.state,
+      unit3: this.unit3.state,
+      numberLength: this.numberLength,
+      activeUnitTarget: this.activeUnitTarget
     };
   }
 }

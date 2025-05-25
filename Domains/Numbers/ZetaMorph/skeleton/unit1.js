@@ -1,65 +1,59 @@
 // unit1.js
 // Located in ZetaMorph/skeleton/
 
-import { SYMBOL_SEQUENCE, VOID_SYMBOL } from '../core/sacred9.js';
+import { SYMBOL_SEQUENCE } from '../core/sacred9.js';
+import Expand from '../MorphLogic/expand.js';
 
-function morphSymbol(current, direction = 1) {
-  const index = SYMBOL_SEQUENCE.indexOf(current);
-  return SYMBOL_SEQUENCE[(index + direction + SYMBOL_SEQUENCE.length) % SYMBOL_SEQUENCE.length];
-}
+console.log('unit1.js loaded');
 
 export default class Unit1 {
   constructor() {
     this.state = {
-      label: 'unit1', // Primary unit (0–9)
-      currentSymbol: SYMBOL_SEQUENCE[0], // ⚙ for 0
-      pushes: [],
+      currentSymbol: '⊙',
       carry: 0,
-      collapsed: false,
-      hasCollapsed: false
+      hasCollapsed: false,
+      pushes: [],
+      pushesLength: 0
     };
-    this.carryTarget = 'Unit2'; // Carry to Unit2
   }
 
-  push(times = 1, carryBus) {
-    if (times >= 10) {
-      console.log(`Unit1 Push: Bypassing ${times} to collapse`);
-      this.state.collapsed = true;
-      this.state.hasCollapsed = true;
-      this.state.carry = Math.floor(times / 10);
-      this.state.currentSymbol = SYMBOL_SEQUENCE[1]; // Reset to ● (1)
-      if (carryBus) {
-        carryBus.registerCarry(this.state.carry, this.carryTarget);
-        console.log(`Unit1 Carry: Registered CARRY: ${this.state.carry} to ${this.carryTarget}`);
-      }
-      this.state.pushes = [];
-      return;
-    }
-    const direction = times >= 0 ? 1 : -1;
-    const absTimes = Math.abs(times);
-    for (let i = 0; i < absTimes; i++) {
-      this.state.pushes.push(direction);
-      this.state.currentSymbol = morphSymbol(this.state.currentSymbol, direction);
-      console.log(`Unit1 Push: SYMBOL: ${this.state.currentSymbol} CARRY: ${this.state.carry} DIRECTION: ${direction}`);
-      if (this.state.currentSymbol === SYMBOL_SEQUENCE[10] && direction > 0) {
-        this.state.collapsed = true;
-        this.state.hasCollapsed = true;
+  push(count, carryBus) {
+    let currentIndex = this.state.currentSymbol && this.state.currentSymbol !== '⊙'
+      ? SYMBOL_SEQUENCE.indexOf(this.state.currentSymbol)
+      : -1;
+    
+    for (let i = 0; i < count; i++) {
+      currentIndex = (currentIndex + 1) % SYMBOL_SEQUENCE.length;
+      this.state.currentSymbol = SYMBOL_SEQUENCE[currentIndex];
+      this.state.pushes.push(this.state.currentSymbol);
+      
+      console.log(
+        `Unit1 Push: SYMBOL: ${this.state.currentSymbol} CARRY: ${this.state.carry} DIRECTION: 1`
+      );
+      
+      if (currentIndex === SYMBOL_SEQUENCE.length - 1) {
         this.state.carry = 1;
-        console.log(`Unit1 Carry: CARRY: ${this.state.carry} COLLAPSED: ${this.state.collapsed}`);
-        if (carryBus) {
-          carryBus.registerCarry(1, this.carryTarget);
-          console.log(`Unit1 Carry: Registered CARRY: 1 to ${this.carryTarget}`);
-        }
-        this.state.currentSymbol = SYMBOL_SEQUENCE[1]; // Reset to ● (1)
-        this.state.pushes = [];
+        this.state.hasCollapsed = true;
+        const remainder = currentIndex % 10; // Fix: Correct remainder for 10 (0 → ⚙)
+        this.state.currentSymbol = SYMBOL_SEQUENCE[remainder];
+        carryBus.registerCarry(1, 'Unit2');
+        console.log(
+          `Unit1 Carry: CARRY: ${this.state.carry} COLLAPSED: ${this.state.hasCollapsed}`
+        );
+        console.log(`CarryBus: Registered CARRY: 1 to Unit2`);
+        console.log(`Remainder set to: ${remainder}`);
+        
+        // Trigger expansion
+        const expand = new Expand();
+        expand.expand(this.skeleton, this.state.carry, remainder);
+        break; // Stop pushing after collapse
       }
     }
+    
+    this.state.pushesLength = this.state.pushes.length;
   }
 
   getState() {
-    return {
-      ...this.state,
-      currentSymbol: this.state.currentSymbol || VOID_SYMBOL
-    };
+    return this.state;
   }
 }
